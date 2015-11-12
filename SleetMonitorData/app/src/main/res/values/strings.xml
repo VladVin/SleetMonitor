@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">SleetMonitorData</string>
+
+    <color name="green">#81C784</color>
+    <color name="red">#E57373</color>
+    <color name="blue">#64B5F6</color>
+    <color name="purple">#BA68C8</color>
+    <color name="cyan">#4DD0E1</color>
+</resources>
