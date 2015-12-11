@@ -31,7 +31,7 @@ public class SensorTracker implements SensorEventListener {
     private SensorManager sensorManager;
     private Sensor accelerometer;
     private DataWriter dataWriter;
-    private ToneGenerator toneGenerator = new ToneGenerator(AudioManager.STREAM_ALARM, 50);
+    private ToneGenerator toneGenerator = new ToneGenerator(AudioManager.STREAM_ALARM, 100);
 
     private float accelerometerMaxRange;
     private long minDelay;
