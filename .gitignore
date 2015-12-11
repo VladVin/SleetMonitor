@@ -27,3 +27,6 @@ proguard/
 *.log
 
 trash/
+
+#Python
+*.pyc
