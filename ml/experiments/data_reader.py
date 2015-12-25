@@ -1,8 +1,10 @@
 import re
 
+# Data represent as [frame_data], [label]
 class DataReader(object):
     def parse(self, filename):
         data = []
+        labels = []
         f = open(filename, 'r')
         for line in f:
             frame_data_str = re.findall(r"-?\d+\.\d*", line)
@@ -18,7 +20,8 @@ class DataReader(object):
                 frame_data = []
                 for i in range(0, len(frame_data_str)):
                     frame_data.append(float(frame_data_str[i]))
-                data.append((frame_data, frame_label))
+                data.append(frame_data)
+                labels.append(frame_label)
                 
         f.close()
-        return data
+        return data, labels
