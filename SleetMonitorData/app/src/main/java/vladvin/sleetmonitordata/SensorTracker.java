@@ -10,6 +10,7 @@ import android.media.ToneGenerator;
 import android.util.Log;
 import android.util.Pair;
 
+import java.io.BufferedOutputStream;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,6 +27,7 @@ public class SensorTracker implements SensorEventListener {
     private final static String TAG = "SensorTracker";
 
     private enum MeasurementsTypes { FALL, NON_FALL }
+    private enum TrackingStatus { BLOOM, READY, FAILING, SAVED, BEACH }
 
     private MainActivity activity;
     private SensorManager sensorManager;
@@ -38,16 +40,13 @@ public class SensorTracker implements SensorEventListener {
     private SensorData lastMeasurement;
     private SensorData currentMeasurement;
     private long lastTimestamp = 0;
-    private boolean tracking = false;
-    private boolean ready = false;
-    private boolean lifting = false;
-    private boolean saved = false;
-    private boolean longBeeped = false;
+    private TrackingStatus status = TrackingStatus.SAVED;
     private boolean isPaused = true;
     private long trackingTime = 0;   //msec
     private final static int MAX_MEASUREMENT_TIME = 1500;  // msec
-    private final static int MAX_TEMP_MEASUREMENTS = 20;
-    private final static float IMPULSE_FACTOR = 0.05f;
+    private final static int MAX_TEMP_MEASUREMENTS = 50;
+    private final static float IMPULSE_FACTOR = 0.01f;
+    private final static float IMPULSE_COUNT_THRESHOLD = 20;
     private final Queue<Pair<Long, SensorData>> measurements;
     private int countMeasurements = 0;
     private final Queue<SensorData> tempMeasurements;
@@ -83,6 +82,7 @@ public class SensorTracker implements SensorEventListener {
 
     public void setPlay() {
         isPaused = false;
+        dataWriter.writePlay();
     }
 
     public void setPause() {
@@ -106,49 +106,42 @@ public class SensorTracker implements SensorEventListener {
 
         addTempMeasurement(currentMeasurement);
 
-        boolean isIdle = isIdle();
-        if (!ready && isIdle) {
-            if (saved) {
-                saved = false;
-                lifting = true;
-            } else {
-                if (!lifting) {
-                    ready = true;
-                    playBeep();
-                }
-            }
-        }
-
-        if (!isIdle) {
-            if (lifting) {
-                lifting = false;
-            }
-            if (!tracking && ready) {
-                tracking = true;
-                this.trackingTime = 0;
-                countMeasurements = 0;
-            }
-        }
-
-        if (tracking) {
-            this.trackingTime += delay;
+        if (status == TrackingStatus.FAILING) {
+            trackingTime += delay;
             Pair<Long, SensorData> item = new Pair<Long, SensorData>(trackingTime, new SensorData(currentMeasurement));
             measurements.add(item);
             countMeasurements++;
-        }
 
-        if ((this.trackingTime >= MAX_MEASUREMENT_TIME) && tracking) {
-            incrementFallsCount();
-            dataWriter.fetData(measurements, countMeasurements);
-            tracking = false;
-            ready = false;
-            saved = true;
-            longBeeped = false;
+            if (trackingTime >= MAX_MEASUREMENT_TIME) {
+                incrementFallsCount();
+                dataWriter.fetData(measurements, countMeasurements);
+                status = TrackingStatus.SAVED;
+                Log.d(TAG, "Saved...");
+                playLongBeep();
+            } else {
+                // TODO
+            }
         }
-
-        if (saved && !longBeeped) {
-            longBeeped = true;
-            playLongBeep();
+        boolean isIdle = isIdle();
+        if (isIdle) {
+            if (status == TrackingStatus.BLOOM) {
+                status = TrackingStatus.READY;
+                Log.d(TAG, "Ready...");
+                playBeep();
+            } else if (status == TrackingStatus.SAVED) {
+                status = TrackingStatus.BEACH;
+                Log.d(TAG, "Beach...");
+            }
+        } else {
+            if (status == TrackingStatus.READY) {
+                status = TrackingStatus.FAILING;
+                Log.d(TAG, "Failing...");
+                this.trackingTime = 0;
+                countMeasurements = 0;
+            } else if (status == TrackingStatus.BEACH) {
+                status = TrackingStatus.BLOOM;
+                Log.d(TAG, "Blooming...");
+            }
         }
 
         lastMeasurement.setX(currentMeasurement.getX());
@@ -167,11 +160,7 @@ public class SensorTracker implements SensorEventListener {
 
     private void initializeTracker() {
         lastTimestamp = 0;
-        tracking = false;
-        ready = false;
-        lifting = false;
-        saved = false;
-        longBeeped = false;
+        status = TrackingStatus.SAVED;
         trackingTime = 0;
         isPaused = true;
         tempMeasurements.clear();
@@ -192,16 +181,21 @@ public class SensorTracker implements SensorEventListener {
         Iterator<SensorData> iterator = tempMeasurements.iterator();
         SensorData sData = iterator.next();
         SensorData prevSData = new SensorData(sData);
+        int impulseCount = 0;
         while (iterator.hasNext()) {
             sData = iterator.next();
             if (Math.abs(sData.getX() - prevSData.getX()) > IMPULSE_FACTOR ||
                     Math.abs(sData.getY() - prevSData.getY()) > IMPULSE_FACTOR ||
                     Math.abs(sData.getZ() - prevSData.getZ()) > IMPULSE_FACTOR) {
-                return false;
+                impulseCount++;
             }
             prevSData = new SensorData(sData);
         }
-        return true;
+        if (impulseCount >= IMPULSE_COUNT_THRESHOLD) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     private void incrementFallsCount() {

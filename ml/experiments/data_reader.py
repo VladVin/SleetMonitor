@@ -1,4 +1,5 @@
 import re
+import random
 
 # Data represent as [frame_data], [label]
 class DataReader(object):
@@ -25,3 +26,15 @@ class DataReader(object):
                 
         f.close()
         return data, labels
+
+    def shuffle(self, data, labels):
+        length = min(len(data), len(labels))
+        data_in = data[:]
+        labels_in = labels[:]
+        data_out = []
+        labels_out = []
+        for i in range(0, length):
+            rnd_idx = random.randint(0, len(data_in) - 1)
+            data_out.append(data_in.pop(rnd_idx))
+            labels_out.append(labels_in.pop(rnd_idx))
+        return data_out, labels_out
