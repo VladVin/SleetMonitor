@@ -78,6 +78,10 @@ public class DataWriter extends AsyncTask<Void, Void, Void> {
         this.isFall = isFall;
     }
 
+    public void writePlay() {
+        writeToFile("PLAY");
+    }
+
     public void cancel() throws DataWriterException {
         isCanceled = true;
         try {
@@ -138,34 +142,26 @@ public class DataWriter extends AsyncTask<Void, Void, Void> {
     }
 
     private void writeDataToFile(int label) {
-        if (bufferedWriter == null) {
-            return;
-        }
-        try {
-            switch (label) {
-                case 0:
-                    bufferedWriter.write("GOOD");
-                    break;
-                default:
-                    bufferedWriter.write("Label" + String.valueOf(label));
-                    break;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            bufferedWriter.write("\n");
-            bufferedWriter.flush();
-            Log.d(TAG, "Data written");
-        } catch (IOException e) {
-            e.printStackTrace();
+        switch (label) {
+            case 0:
+                writeToFile("GOOD");
+                break;
+            default:
+                writeToFile("Label" + String.valueOf(label));
+                break;
         }
     }
 
     private void writeInitializationMessage() {
+        writeToFile("DataWriter was initialized");
+    }
+
+    private void writeToFile(String text) {
         if (bufferedWriter != null) {
             try {
-                bufferedWriter.write("DataWriter was initialized\n");
+                bufferedWriter.write("\n");
+                bufferedWriter.write(text + "\n");
+                bufferedWriter.write("\n");
             } catch (IOException e) {
                 e.printStackTrace();
             }
