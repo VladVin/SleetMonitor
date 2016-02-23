@@ -11,12 +11,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bfa906d9-4350-4c30-840d-bdacbd863e12" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/vladvin/sleetmonitordata/DataWriter.java" afterPath="$PROJECT_DIR$/app/src/main/java/vladvin/sleetmonitordata/DataWriter.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/vladvin/sleetmonitordata/SensorTracker.java" afterPath="$PROJECT_DIR$/app/src/main/java/vladvin/sleetmonitordata/SensorTracker.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/app.iml" afterPath="$PROJECT_DIR$/app/app.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../ml/experiments/data_reader.py" afterPath="$PROJECT_DIR$/../ml/experiments/data_reader.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../ml/experiments/random_forest_classifier_experiment.py" afterPath="$PROJECT_DIR$/../ml/experiments/random_forest_classifier_experiment.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="SleetMonitorData.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -95,8 +90,8 @@
       <file leaf-file-name="SensorTracker.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/vladvin/sleetmonitordata/SensorTracker.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.80347824">
-              <caret line="122" column="13" selection-start-line="122" selection-start-column="13" selection-end-line="122" selection-end-column="13" />
+            <state vertical-scroll-proportion="0.72695655">
+              <caret line="120" column="13" selection-start-line="120" selection-start-column="13" selection-end-line="120" selection-end-column="13" />
               <folding>
                 <element signature="e#3365#3366#0" expanded="true" />
                 <element signature="e#3400#3401#0" expanded="true" />
@@ -2185,8 +2180,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/vladvin/sleetmonitordata/SensorTracker.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.80347824">
-          <caret line="122" column="13" selection-start-line="122" selection-start-column="13" selection-end-line="122" selection-end-column="13" />
+        <state vertical-scroll-proportion="0.72695655">
+          <caret line="120" column="13" selection-start-line="120" selection-start-column="13" selection-end-line="120" selection-end-column="13" />
           <folding>
             <element signature="e#3365#3366#0" expanded="true" />
             <element signature="e#3400#3401#0" expanded="true" />

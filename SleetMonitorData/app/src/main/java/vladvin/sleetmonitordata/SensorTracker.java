@@ -118,8 +118,6 @@ public class SensorTracker implements SensorEventListener {
                 status = TrackingStatus.SAVED;
                 Log.d(TAG, "Saved...");
                 playLongBeep();
-            } else {
-                // TODO
             }
         }
         boolean isIdle = isIdle();
