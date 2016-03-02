@@ -43,7 +43,7 @@ class RandomForestClassifierExperiment(object):
 if (__name__ == '__main__'):
 
     dataReader = DataReader()
-    data, labels = dataReader.parse('../data/data3_55_196.txt')
+    data, labels = dataReader.parse('../data/data5_55_278.txt')
 
     data, labels = dataReader.shuffle(data, labels)
 
