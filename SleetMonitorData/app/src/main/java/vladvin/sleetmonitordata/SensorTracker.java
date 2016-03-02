@@ -80,12 +80,12 @@ public class SensorTracker implements SensorEventListener {
         dataWriter.changeFallState(isFall);
     }
 
-    public void setPlay() {
+    public void play() {
         isPaused = false;
         dataWriter.writePlay();
     }
 
-    public void setPause() {
+    public void pause() {
         initializeTracker();
     }
 
@@ -117,7 +117,7 @@ public class SensorTracker implements SensorEventListener {
                 dataWriter.fetData(measurements, countMeasurements);
                 status = TrackingStatus.SAVED;
                 Log.d(TAG, "Saved...");
-                playLongBeep();
+//                playLongBeep();
             }
         }
         boolean isIdle = isIdle();
@@ -125,7 +125,7 @@ public class SensorTracker implements SensorEventListener {
             if (status == TrackingStatus.BLOOM) {
                 status = TrackingStatus.READY;
                 Log.d(TAG, "Ready...");
-                playBeep();
+//                playBeep();
             } else if (status == TrackingStatus.SAVED) {
                 status = TrackingStatus.BEACH;
                 Log.d(TAG, "Beach...");
@@ -150,10 +150,6 @@ public class SensorTracker implements SensorEventListener {
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
-    }
-
-    public void release() throws DataWriterException {
-        dataWriter.cancel();
     }
 
     private void initializeTracker() {
