@@ -7,10 +7,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
-
-import java.io.BufferedWriter;
-
 import vladvin.sleetmonitordata.Exceptions.DataWriterException;
 
 public class MainActivity extends Activity {
@@ -29,6 +25,8 @@ public class MainActivity extends Activity {
     private Button playBtn;
     private Button pauseBtn;
 
+    private Toast toast;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,7 +35,7 @@ public class MainActivity extends Activity {
         try {
             dataWriter = new DataWriter();
         } catch (Exception e) {
-            sayToToast(e.getMessage());
+            showToast(e.getMessage());
             return;
         }
         sensorTracker = new SensorTracker(this, dataWriter);
@@ -56,7 +54,7 @@ public class MainActivity extends Activity {
         label1Btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sayToToast("Label 1 sent to DataWriter");
+                showToast("Label 1 sent to DataWriter");
                 dataWriter.fetData(1);
             }
         });
@@ -64,7 +62,7 @@ public class MainActivity extends Activity {
         label2Btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sayToToast("Label 2 sent to DataWriter");
+                showToast("Label 2 sent to DataWriter");
                 dataWriter.fetData(2);
             }
         });
@@ -72,7 +70,7 @@ public class MainActivity extends Activity {
         label3Btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sayToToast("Label 3 sent to DataWriter");
+                showToast("Label 3 sent to DataWriter");
                 dataWriter.fetData(3);
             }
         });
@@ -80,7 +78,7 @@ public class MainActivity extends Activity {
         goodLabelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sayToToast("GOOD label sent to DataWriter");
+                showToast("GOOD label sent to DataWriter");
                 dataWriter.fetData(0);
             }
         });
@@ -88,7 +86,7 @@ public class MainActivity extends Activity {
         trackFallBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sayToToast("Fall tracker is registered");
+                showToast("Fall tracker is registered");
                 sensorTracker.changeFallState(true);
             }
         });
@@ -96,7 +94,7 @@ public class MainActivity extends Activity {
         trackNonFallBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sayToToast("Non-Fall tracker is registered");
+                showToast("Non-Fall tracker is registered");
                 sensorTracker.changeFallState(false);
             }
         });
@@ -104,16 +102,16 @@ public class MainActivity extends Activity {
         playBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sayToToast("Play");
-                sensorTracker.setPlay();
+                showToast("Play");
+                sensorTracker.play();
             }
         });
 
         pauseBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sayToToast("Pause");
-                sensorTracker.setPause();
+                showToast("Pause");
+                sensorTracker.pause();
             }
         });
     }
@@ -127,17 +125,50 @@ public class MainActivity extends Activity {
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onResume() {
+        super.onResume();
         try {
-            sensorTracker.release();
+            if (dataWriter != null) {
+                dataWriter.openFile();
+            }
         } catch (DataWriterException dataWriterException) {
-            sayToToast(dataWriterException.getMessage());
+            showToast(dataWriterException.getMessage());
         }
     }
 
-    private void sayToToast(String message) {
-        Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG);
-        toast.show();
+    @Override
+    protected void onPause() {
+        super.onPause();
+//        sensorTracker.pause();
+//        try {
+//            if (dataWriter != null) {
+//                dataWriter.releaseFile();
+//            }
+//        } catch (DataWriterException dataWriterException) {
+//            showToast(dataWriterException.getMessage());
+//        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    private void showToast(final String message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (toast != null) {
+                    toast.cancel();
+                }
+                toast = Toast.makeText(getBaseContext(), message, Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
     }
 }

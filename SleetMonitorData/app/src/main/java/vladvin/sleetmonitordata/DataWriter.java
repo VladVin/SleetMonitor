@@ -35,25 +35,8 @@ public class DataWriter extends AsyncTask<Void, Void, Void> {
     private DataType currentDataType = DataType.NONE;
 
     public DataWriter() throws DataWriterException {
-        if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            throw new DataWriterException("External storage not mounted");
-        }
-        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), dirname);
-        if (!file.mkdirs() && !file.isDirectory()) {
-            throw new DataWriterException("Cannot create directory");
-        }
-
-        if (file.isDirectory()) {
-            filepath = file.getAbsoluteFile() + "/data.txt";
-            FileWriter fileWriter;
-            try {
-                fileWriter = new FileWriter(filepath, true);
-            } catch (IOException e) {
-                throw new DataWriterException("Cannot create file");
-            }
-            bufferedWriter = new BufferedWriter(fileWriter);
-            writeInitializationMessage();
-        }
+        openFile();
+        writeInitializationMessage();
     }
 
     public void fetData(final Queue<Pair<Long, SensorData>> data, int count) {
@@ -82,14 +65,40 @@ public class DataWriter extends AsyncTask<Void, Void, Void> {
         writeToFile("PLAY");
     }
 
-    public void cancel() throws DataWriterException {
-        isCanceled = true;
+    public void openFile() throws DataWriterException {
+        if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            throw new DataWriterException("External storage not mounted");
+        }
+        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), dirname);
+        if (!file.mkdirs() && !file.isDirectory()) {
+            throw new DataWriterException("Cannot create directory");
+        }
+
+        if (file.isDirectory()) {
+            filepath = file.getAbsoluteFile() + "/data.txt";
+            FileWriter fileWriter;
+            try {
+                fileWriter = new FileWriter(filepath, true);
+            } catch (IOException e) {
+                throw new DataWriterException("Cannot create file");
+            }
+            bufferedWriter = new BufferedWriter(fileWriter);
+        }
+    }
+
+    public void releaseFile() throws DataWriterException {
         try {
             bufferedWriter.close();
         } catch (Exception e) {
             throw new DataWriterException("Cannot close BufferedWriter");
         }
         MediaScannerConnection.scanFile(ApplicationCtx.getContext(), new String[]{filepath}, null, null);
+    }
+
+    public void cancel() throws DataWriterException {
+//        cancel(true);
+        isCanceled = true;
+        releaseFile();
     }
 
     @Override
@@ -159,9 +168,7 @@ public class DataWriter extends AsyncTask<Void, Void, Void> {
     private void writeToFile(String text) {
         if (bufferedWriter != null) {
             try {
-                bufferedWriter.write("\n");
                 bufferedWriter.write(text + "\n");
-                bufferedWriter.write("\n");
             } catch (IOException e) {
                 e.printStackTrace();
             }
