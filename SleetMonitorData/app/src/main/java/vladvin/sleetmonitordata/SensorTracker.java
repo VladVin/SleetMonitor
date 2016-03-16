@@ -117,7 +117,7 @@ public class SensorTracker implements SensorEventListener {
                 dataWriter.fetData(measurements, countMeasurements);
                 status = TrackingStatus.SAVED;
                 Log.d(TAG, "Saved...");
-//                playLongBeep();
+                playLongBeep();
             }
         }
         boolean isIdle = isIdle();
@@ -125,7 +125,7 @@ public class SensorTracker implements SensorEventListener {
             if (status == TrackingStatus.BLOOM) {
                 status = TrackingStatus.READY;
                 Log.d(TAG, "Ready...");
-//                playBeep();
+                playBeep();
             } else if (status == TrackingStatus.SAVED) {
                 status = TrackingStatus.BEACH;
                 Log.d(TAG, "Beach...");

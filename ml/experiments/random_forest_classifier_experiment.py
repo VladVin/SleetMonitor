@@ -1,3 +1,6 @@
+import sys
+import os.path
+
 from sklearn.ensemble import RandomForestClassifier
 from data_reader import DataReader
 
@@ -20,7 +23,7 @@ class RandomForestClassifierExperiment(object):
         accuracy = float(correctAnswers) / float(testDataSize)
         print 'Accuracy: ', accuracy * 100.0, '%'
 
-    def multiple_test(self, train_x, train_y, test_x, test_y, count_test=10):
+    def evaluate(self, train_x, train_y, test_x, test_y, count_test=10):
         print 'Train data batch size: ', len(train_x)
         print 'Test data batch size: ', len(test_x)
 
@@ -42,17 +45,29 @@ class RandomForestClassifierExperiment(object):
 
 if (__name__ == '__main__'):
 
-    dataReader = DataReader()
-    data, labels = dataReader.parse('../data/data5_55_278.txt')
+    help_mes = "Incorrect arguments. Put data file name"
+    if (len(sys.argv) < 2):
+        print help_mes
+        exit()
+    fname = sys.argv[1]
+    if (not os.path.exists(fname)):
+        print help_mes
+        exit()
 
+    dataReader = DataReader()
+    print "Parsing data..."
+    data, labels = dataReader.parse(fname)
+    print "Shuffling data..."
     data, labels = dataReader.shuffle(data, labels)
 
+    # Divide data into two parts: training and testing
     train_batch_size = int(0.8 * len(data))
 
-    rfcExp = RandomForestClassifierExperiment(10)
-
+    rfc_exp = RandomForestClassifierExperiment(10)
     # Train and test classifier on different data
-    rfcExp.multiple_test(data[0:train_batch_size], labels[0:train_batch_size],
+    print "Evaluating process started."
+    rfc_exp.evaluate(data[0:train_batch_size], labels[0:train_batch_size],
         data[train_batch_size:], labels[train_batch_size:])
-    # rfcExp.train(data[0:train_batch_size], labels[0:train_batch_size])
-    # rfcExp.test(data[train_batch_size:], labels[train_batch_size:])
+
+    # rfc_exp.train(data[0:train_batch_size], labels[0:train_batch_size])
+    # rfc_exp.test(data[train_batch_size:], labels[train_batch_size:])
