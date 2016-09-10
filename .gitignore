@@ -47,3 +47,4 @@ trash/
 *.pyc
 
 *.tmp
+.DS_Store
