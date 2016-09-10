@@ -19,6 +19,7 @@ public class SensorTracker implements SensorEventListener {
         this.sensorManager = (SensorManager) ApplicationCtx.getContext().getSystemService(Context.SENSOR_SERVICE);
         this.accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         this.accelerometerMaxRange = accelerometer.getMaximumRange();
+        this.sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_FASTEST);
     }
 
     @Override
