@@ -36,6 +36,7 @@ trash/
 # User-specific stuff:
 .idea/workspace.xml
 .idea/tasks.xml
+.idea/misc.xml
 .idea/dictionaries
 .idea/vcs.xml
 .idea/jsLibraryMappings.xml
