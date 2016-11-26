@@ -3,6 +3,7 @@ package event_hub;
 import com.microsoft.azure.eventprocessorhost.EventProcessorHost;
 import com.microsoft.azure.eventprocessorhost.EventProcessorOptions;
 import com.microsoft.azure.servicebus.ConnectionStringBuilder;
+import storage.StorageManager;
 
 import java.util.concurrent.ExecutionException;
 
@@ -21,18 +22,26 @@ public class Receiver
     private static final String storageAccountKey = "0+PXyala92hE8uOuguA0XKg/wOG9YEm2YfGtdEpxuwuLyJt9CIReyfQ1gVRO8M7ggsjJCt2C88l2MItomaw2xA==";
     private static final String storageConnectionString = "DefaultEndpointsProtocol=https;AccountName=" + storageAccountName + ";AccountKey=" + storageAccountKey;
 
-    public static void main(String args[])
-    {
-        ConnectionStringBuilder eventHubConnectionString = new ConnectionStringBuilder(namespaceName, eventHubName, sasKeyName, sasKey);
+    private final EventProcessorHost eph;
 
-        EventProcessorHost host = new EventProcessorHost(eventHubName, consumerGroupName, eventHubConnectionString.toString(), storageConnectionString);
+    public Receiver() {
+        ConnectionStringBuilder eventHubConnectionString =
+                new ConnectionStringBuilder(
+                        namespaceName, eventHubName,
+                        sasKeyName, sasKey);
+        this.eph = new EventProcessorHost(
+                eventHubName, consumerGroupName,
+                eventHubConnectionString.toString(),
+                storageConnectionString);
+    }
 
-        System.out.println("Registering host named " + host.getHostName());
+    public void register() {
+        System.out.println("Registering host named " + eph.getHostName());
         EventProcessorOptions options = new EventProcessorOptions();
         options.setExceptionNotification(new ErrorNotificationHandler());
         try
         {
-            host.registerEventProcessor(EventProcessor.class, options).get();
+            eph.registerEventProcessor(EventProcessor.class, options).get();
         }
         catch (Exception e)
         {
@@ -47,23 +56,6 @@ public class Receiver
                 System.out.println(e.toString());
             }
         }
-
-        System.out.println("Press enter to stop");
-        try
-        {
-            System.in.read();
-            host.unregisterEventProcessor();
-
-            System.out.println("Calling forceExecutorShutdown");
-            EventProcessorHost.forceExecutorShutdown(120);
-        }
-        catch(Exception e)
-        {
-            System.out.println(e.toString());
-            e.printStackTrace();
-        }
-
-        System.out.println("End of sample");
     }
 }
 
