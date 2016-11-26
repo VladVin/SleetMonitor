@@ -10,3 +10,13 @@ netty-common-4.0.37.Final.jar
 netty-handler-4.0.37.Final.jar
 netty-transport-4.0.37.Final.jar
 slf4j-api-1.7.6.jar
+
+jackson-core-2.6.0.jar
+gson-2.7.jar
+azure-eventhubs-eph-0.9.0.jar
+azure-eventhubs-0.9.0.jar
+azure-keyvault-core-0.8.0.jar
+azure-storage-4.4.0.jar
+commons-lang3-3.4.jar
+proton-j-0.15.0.jar
+slf4j-api-1.7.12.jar
