@@ -1,19 +1,42 @@
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Session;
+import storage.DataConverter;
+import storage.StorageManager;
 
 /**
  * Created by VladVin on 15.11.2016.
  */
 public class HelloCassandra {
     public static void main(String[] args) {
-        Cluster cluster;
-        Session session;
+        String json = "{\n" +
+                "    \"user_id\": \"new_user1\",\n" +
+                "    \"data\": [\n" +
+                "        {\n" +
+                "            \"x\": 0.425,\n" +
+                "            \"y\": 0.345,\n" +
+                "            \"z\": 0.725,\n" +
+                "            \"lat\": 0.532634563,\n" +
+                "            \"lon\": 0.283765404,\n" +
+                "            \"ts\": 1480161696\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"x\": -0.542,\n" +
+                "            \"y\": -0.245,\n" +
+                "            \"z\": -0.125,\n" +
+                "            \"lat\": 0.535673433,\n" +
+                "            \"lon\": 0.283345346,\n" +
+                "            \"ts\": 1480161687\n" +
+                "        }\n" +
+                "    ]\n" +
+                "}";
 
-        cluster = Cluster.builder().addContactPoint("127.0.0.1").build();
-        session = cluster.connect("FamilyDB");
+        String json1 = "{\"data\": \"value\"}";
 
-        ResultSet rs = session.execute("SELECT * FROM Person");
-        rs.forEach(row -> System.out.println(row.getString("lastname") + " " + row.getInt("age")));
+        DataConverter.parseJson(json);
+
+//        StorageManager sm = new StorageManager();
+//        sm.saveEventData("");
+//        sm.stopDBManager();
     }
 }
