@@ -19,8 +19,7 @@ class DBManager(object):
             rows = self._session.execute(prepared, (user_id,))
             user_sd[user_id] = [(row.x, row.y, row.z, row.timestamp) for row in rows]
 
-        # self.set_not_updated_status(users_ids)
-        print(user_sd)
+        self.set_not_updated_status(users_ids)
         return user_sd
 
     def update_fall_statuses(self, statuses_dict):
