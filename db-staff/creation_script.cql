@@ -8,8 +8,8 @@ create table white_snow.sensor_data(
     z float,
     lat double,
     lon double,
-    timestamp timestamp,
-    fall_info int,
+    timestamp bigint,
+    fall_status int,
     primary key(user_id, timestamp)
 ) with clustering order by (timestamp desc);
 
@@ -18,3 +18,6 @@ create table white_snow.update_info(
     is_updated boolean,
     primary key(user_id)
 );
+
+create index if not exists user_updated_index
+on white_snow.update_info(is_updated);
