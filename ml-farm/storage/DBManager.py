@@ -14,7 +14,7 @@ class DBManager(object):
         self.set_not_updated_status(users_ids)
 
         prepared = self._session.prepare(
-            'select x, y, z, timestamp from sensor_data where user_id = ? and fall_status = 0 allow filtering'
+            'select x, y, z, timestamp from sensor_data where user_id = ? and fall_status = -1 allow filtering'
         )
 
         user_sd = {}
