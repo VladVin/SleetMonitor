@@ -12,60 +12,76 @@ import java.util.List;
 /**
  * Created by VladVin on 26.11.2016.
  */
-public class DBManager {
+class DBManager {
     private static final String KEYSPACE_NAME = "white_snow";
     private static final String KEYSPACE_HOST = "127.0.0.1";
 
     private final Cluster cluster;
     private final Session session;
 
-    public DBManager() {
+    DBManager() {
         cluster = Cluster.builder().addContactPoint(KEYSPACE_HOST).build();
         session = cluster.connect(KEYSPACE_NAME);
 
         cluster.getConfiguration().getCodecRegistry()
                 .register(InstantCodec.instance);
-
-        ResultSet rs = session.execute("select * from sensor_data");
-        rs.forEach(row -> System.out.println(row.getString("user_id") + " " + row.getTimestamp("timestamp")));
     }
 
-    public void saveDataEntries(List<UserDataEntry> dataEntries) {
+    void saveDataEntries(List<UserDataEntry> dataEntries) {
         if (session == null || cluster == null) {
             return;
         }
 
-        PreparedStatement prepared = session.prepare(
-                "insert into sensor_data (user_id, x, y, z, lat, lon, timestamp, fall_info)" +
+        PreparedStatement ps = session.prepare(
+                "insert into sensor_data (user_id, x, y, z, lat, lon, timestamp, fall_status)" +
                 "values (?, ?, ?, ?, ?, ?, ?, ?)");
+        BatchStatement bs = new BatchStatement();
 
         for (UserDataEntry entry : dataEntries) {
-            BoundStatement bound = prepared.bind(
+            bs.add(ps.bind(
                     entry.getUser_id(),
                     entry.getX(),
                     entry.getY(),
                     entry.getZ(),
                     entry.getLat(),
                     entry.getLon(),
-                    Instant.ofEpochMilli(entry.getTimestamp()),
-                    0
-            );
-            session.execute(bound);
+                    entry.getTimestamp(),
+                    -1
+            ));
         }
+        session.executeAsync(bs);
     }
 
-    public void stop() {
+    void updateUsersStatuses(List<String> usersIds) {
+        if (session == null || cluster == null) {
+            return;
+        }
+
+        PreparedStatement ps = session.prepare(
+                "update update_info set is_updated = true where user_id = ?"
+        );
+        BatchStatement bs = new BatchStatement();
+
+        for (String userId : usersIds) {
+            bs.add(ps.bind(
+                    userId
+            ));
+        }
+        session.executeAsync(bs);
+    }
+
+    void stop() {
         closeSession();
         closeCluster();
     }
 
-    public void closeSession() {
+    private void closeSession() {
         if (session != null) {
             session.close();
         }
     }
 
-    public void closeCluster() {
+    private void closeCluster() {
         if (cluster != null) {
             cluster.close();
         }
