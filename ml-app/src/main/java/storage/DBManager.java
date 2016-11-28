@@ -25,9 +25,6 @@ public class DBManager {
 
         cluster.getConfiguration().getCodecRegistry()
                 .register(InstantCodec.instance);
-
-        ResultSet rs = session.execute("select * from sensor_data");
-        rs.forEach(row -> System.out.println(row.getString("user_id") + " " + row.getTimestamp("timestamp")));
     }
 
     public void saveDataEntries(List<UserDataEntry> dataEntries) {
@@ -36,7 +33,7 @@ public class DBManager {
         }
 
         PreparedStatement prepared = session.prepare(
-                "insert into sensor_data (user_id, x, y, z, lat, lon, timestamp, fall_info)" +
+                "insert into sensor_data (user_id, x, y, z, lat, lon, timestamp, fall_status)" +
                 "values (?, ?, ?, ?, ?, ?, ?, ?)");
 
         for (UserDataEntry entry : dataEntries) {
@@ -47,8 +44,8 @@ public class DBManager {
                     entry.getZ(),
                     entry.getLat(),
                     entry.getLon(),
-                    Instant.ofEpochMilli(entry.getTimestamp()),
-                    0
+                    entry.getTimestamp(),
+                    -1
             );
             session.execute(bound);
         }
