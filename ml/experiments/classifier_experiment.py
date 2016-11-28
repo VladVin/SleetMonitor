@@ -8,9 +8,13 @@ from interpolator import Interpolator
 import matplotlib.pyplot as plt
 import numpy as np
 
+from sklearn.externals import joblib
+
 class ClassifierExperiment(object):
     def __init__(self, clf):
-        self._clf = clf;
+        self._clf = clf
+        self._model_fname = '../models/ice_clf1.pkl'
+        self._max_accuracy = 0.0
 
     def train(self, train_x, train_y):
         self._clf = self._clf.fit(train_x, train_y)
@@ -33,9 +37,18 @@ class ClassifierExperiment(object):
         for i in xrange(0, test_count):
             self.train(train_x, train_y)
             accuracy = self.test(test_x, test_y)
+            if (accuracy > self._max_accuracy):
+                self.save_model()
+                self._max_accuracy = accuracy
             accuracy_list.append(accuracy)
 
         return max(accuracy_list)
+
+    def save_model(self):
+        joblib.dump(self._clf, self._model_fname)
+
+    def load_model(self):
+        self._clf = joblib.load(self._model_fname)
 
 if (__name__ == '__main__'):
 

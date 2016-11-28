@@ -1,4 +1,6 @@
 from cassandra.cluster import Cluster
+import numpy as np
+from storage.DataInterpolator import DataInterpolator
 
 class DBManager(object):
     def __init__(self):
@@ -9,17 +11,20 @@ class DBManager(object):
 
     def get_fresh_sensor_data(self):
         users_ids = self.get_updated_users_ids()
+        self.set_not_updated_status(users_ids)
 
         prepared = self._session.prepare(
-            'select x, y, z, timestamp from sensor_data where user_id = ? and fall_status = 0 allow filtering'
+            'select x, y, z, timestamp from sensor_data where user_id = ? and fall_status = -1 allow filtering'
         )
 
         user_sd = {}
         for user_id in users_ids:
             rows = self._session.execute(prepared, (user_id,))
-            user_sd[user_id] = [(row.x, row.y, row.z, row.timestamp) for row in rows]
+            if len(rows.current_rows) == 0:
+                continue
+            user_sd[user_id] = np.ndarray((len(rows.current_rows), 4), dtype=np.dtype('double'))
+            user_sd[user_id][:, :] = np.array([[row.timestamp, row.x, row.y, row.z] for row in rows])
 
-        self.set_not_updated_status(users_ids)
         return user_sd
 
     def update_fall_statuses(self, statuses_dict):
@@ -28,7 +33,7 @@ class DBManager(object):
         )
         for user_id, statuses_tuples in statuses_dict.items():
             for status_tuple in statuses_tuples:
-                self._session.execute(prepared, (status_tuple[1], user_id, status_tuple[0]))
+                self._session.execute_async(prepared, (status_tuple[1], user_id, status_tuple[0]))
 
     def get_updated_users_ids(self):
         rows = self._session.execute(
@@ -42,3 +47,7 @@ class DBManager(object):
         )
         for user_id in users_ids:
             self._session.execute(prepared, (user_id,))
+
+    def stop(self):
+        if self._cluster is not None:
+            self._cluster.shutdown()
