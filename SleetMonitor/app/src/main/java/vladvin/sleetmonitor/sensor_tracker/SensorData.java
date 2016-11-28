@@ -6,12 +6,12 @@ public class SensorData {
     private float x;
     private float y;
     private float z;
-    private double latitude;
-    private double longitude;
-    private long timestamp;
+    private double lat;
+    private double lon;
+    private long ts;
 
-    public SensorData(float accelerometerMaxRange, float x, float y, float z,
-                      double latitude, double longitude, long timestamp) {
+    SensorData(float accelerometerMaxRange, float x, float y, float z,
+               double latitude, double longitude, long timestamp) {
         if (accelerometerMaxRange != 0.0f) {
             this.accelerometerMaxRange = accelerometerMaxRange;
         } else {
@@ -20,9 +20,9 @@ public class SensorData {
         this.x = normalize(x);
         this.y = normalize(y);
         this.z = normalize(z);
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.timestamp = timestamp;
+        this.lat = latitude;
+        this.lon = longitude;
+        this.ts = timestamp;
     }
 
     public SensorData(SensorData sensorData) {
@@ -46,15 +46,15 @@ public class SensorData {
     }
 
     public double getLatitude() {
-        return latitude;
+        return lat;
     }
 
     public double getLongitude() {
-        return longitude;
+        return lon;
     }
 
     public long getTimestamp() {
-        return timestamp;
+        return ts;
     }
 
     public float getAccelerometerMaxRange() {
@@ -70,8 +70,8 @@ public class SensorData {
         return "x: " + x + ", " +
                 "y: " + y + ", " +
                 "z: " + z + ", " +
-                "latitude: " + latitude + ", " +
-                "longitude: " + longitude + ", " +
-                "timestamp: " + timestamp;
+                "lat: " + lat + ", " +
+                "lon: " + lon + ", " +
+                "ts: " + ts;
     }
 }

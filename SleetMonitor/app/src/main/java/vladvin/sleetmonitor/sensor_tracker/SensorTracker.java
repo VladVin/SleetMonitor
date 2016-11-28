@@ -2,20 +2,14 @@ package vladvin.sleetmonitor.sensor_tracker;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.util.Log;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
-import vladvin.sleetmonitor.DataExchange.DataBroker;
+import vladvin.sleetmonitor.data_proc.DataSender;
 
 public class SensorTracker implements SensorEventListener {
     private final static String TAG = "SensorTracker";
@@ -30,9 +24,9 @@ public class SensorTracker implements SensorEventListener {
 
     private Activity activity;
     private LocationTracker locationTracker;
-    private DataBroker dataBroker;
+    private final DataSender dataSender;
 
-    public SensorTracker(Activity activity, LocationTracker locationTracker, DataBroker dataBroker) {
+    public SensorTracker(Activity activity, LocationTracker locationTracker, DataSender dataSender) {
         this.activity = activity;
         this.sensorManager = (SensorManager)
                 activity.getApplicationContext().getSystemService(Context.SENSOR_SERVICE);
@@ -42,7 +36,7 @@ public class SensorTracker implements SensorEventListener {
 
         this.locationTracker = locationTracker;
         this.measurements = new ConcurrentLinkedQueue<>();
-        this.dataBroker = dataBroker;
+        this.dataSender = dataSender;
     }
 
     @Override
@@ -69,11 +63,8 @@ public class SensorTracker implements SensorEventListener {
 
         if (sensorEvent.timestamp - lastSendingDataTimestamp >
                 SEND_DATA_TIME_DIFF * 1000000L) {
-            if (dataBroker != null) {
-                // TODO: Send data to data broker
-                for (SensorData data : measurements) {
-                    Log.w(this.getClass().getName(), data.toString());
-                }
+            if (dataSender != null) {
+                dataSender.sendMeasurements(measurements, measurements.size());
                 lastSendingDataTimestamp = sensorEvent.timestamp;
             }
         }
