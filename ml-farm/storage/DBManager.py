@@ -20,6 +20,8 @@ class DBManager(object):
         user_sd = {}
         for user_id in users_ids:
             rows = self._session.execute(prepared, (user_id,))
+            if len(rows.current_rows) == 0:
+                continue
             user_sd[user_id] = np.ndarray((len(rows.current_rows), 4), dtype=np.dtype('double'))
             user_sd[user_id][:, :] = np.array([[row.timestamp, row.x, row.y, row.z] for row in rows])
 
@@ -31,7 +33,7 @@ class DBManager(object):
         )
         for user_id, statuses_tuples in statuses_dict.items():
             for status_tuple in statuses_tuples:
-                self._session.execute(prepared, (status_tuple[1], user_id, status_tuple[0]))
+                self._session.execute_async(prepared, (status_tuple[1], user_id, status_tuple[0]))
 
     def get_updated_users_ids(self):
         rows = self._session.execute(
