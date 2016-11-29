@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">SleetMonitor</string>
+
+    <string name="cannot_create_data_sender">Cannot create data sender. Check your internet connection</string>
 </resources>

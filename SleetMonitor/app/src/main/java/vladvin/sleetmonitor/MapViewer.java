@@ -5,7 +5,8 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-
+import android.widget.Toast;
+import vladvin.sleetmonitor.data_proc.DataSender;
 import vladvin.sleetmonitor.sensor_tracker.LocationTracker;
 import vladvin.sleetmonitor.sensor_tracker.SensorTracker;
 
@@ -26,7 +27,8 @@ public class MapViewer extends AppCompatActivity
 
         locationTracker = new LocationTracker(this);
         locationTracker.connectLocationServices();
-        sensorTracker = new SensorTracker(this, locationTracker, null);
+        DataSender dataSender = new DataSender(getApplicationContext());
+        sensorTracker = new SensorTracker(this, locationTracker, dataSender);
     }
 
     @Override
@@ -43,5 +45,10 @@ public class MapViewer extends AppCompatActivity
                 }
                 break;
         }
+    }
+
+    private void sendToast(String message) {
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG)
+        .show();
     }
 }
