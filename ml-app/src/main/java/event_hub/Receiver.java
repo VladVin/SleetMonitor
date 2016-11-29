@@ -12,11 +12,12 @@ import java.util.concurrent.ExecutionException;
  */
 public class Receiver
 {
-    private static final String consumerGroupName = "$Default";
-    private static final String namespaceName = "smehns";
-    private static final String eventHubName = "sensor-data-eventhub";
+    private static final String namespaceName = "winter-ns";
+    private static final String eventHubName = "sdeh";
     private static final String sasKeyName = "RootManageSharedAccessKey";
-    private static final String sasKey = "UHRh7IyPWU4JwIH19CB8el+LmV4VkuZij58P00a9S0U=";
+    private static final String sasKey = "0Nsz3brk6a1M3J+oF3//VE+NXUG8b8x80FED5eAi0AI=";
+
+    private static final String consumerGroupName = "$Default";
 
     private static final String storageAccountName = "smsdstorage";
     private static final String storageAccountKey = "0+PXyala92hE8uOuguA0XKg/wOG9YEm2YfGtdEpxuwuLyJt9CIReyfQ1gVRO8M7ggsjJCt2C88l2MItomaw2xA==";
