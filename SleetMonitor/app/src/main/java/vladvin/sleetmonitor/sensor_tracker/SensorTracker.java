@@ -7,7 +7,10 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
+import android.util.Log;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import vladvin.sleetmonitor.data_proc.DataSender;
 
@@ -41,6 +44,8 @@ public class SensorTracker implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
+        long timestamp = new Date().getTime();
+
         if (locationTracker == null) {
             return;
         }
@@ -57,16 +62,16 @@ public class SensorTracker implements SensorEventListener {
                 sensorEvent.values[2],
                 lastLocation.getLatitude(),
                 lastLocation.getLongitude(),
-                sensorEvent.timestamp);
+                timestamp);
 
         measurements.add(sensorData);
 
-        if (sensorEvent.timestamp - lastSendingDataTimestamp >
-                SEND_DATA_TIME_DIFF * 1000000L) {
+        if (timestamp - lastSendingDataTimestamp >
+                SEND_DATA_TIME_DIFF) {
             if (dataSender != null) {
                 dataSender.sendMeasurements(measurements, measurements.size());
-                lastSendingDataTimestamp = sensorEvent.timestamp;
             }
+            lastSendingDataTimestamp = timestamp;
         }
     }
 
