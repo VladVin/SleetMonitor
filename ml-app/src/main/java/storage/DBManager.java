@@ -46,7 +46,7 @@ class DBManager {
                     entry.getLat(),
                     entry.getLon(),
                     entry.getTimestamp(),
-                    -1
+                    0
             ));
         }
         session.executeAsync(bs);

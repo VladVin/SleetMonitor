@@ -44,6 +44,8 @@ public class EventProcessor implements IEventProcessor
         {
             String json = new String(data.getBody(), "UTF8");
 
+            System.out.println(json);
+
             if (storageManager != null) {
                 storageManager.saveEventData(json);
             }
