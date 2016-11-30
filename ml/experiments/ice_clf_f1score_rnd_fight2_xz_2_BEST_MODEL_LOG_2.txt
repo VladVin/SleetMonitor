@@ -1,0 +1,37 @@
+python classifier_experiment.py ../data/data4_55_399_with_rnd_fight2.txt
+Parsing data...
+Training and evaluating process started.
+num epoches = 10
+test count = 10
+train frame params: 5 1500 5
+test frame params: 50 1500 50
+interpolation degree = 1
+accelerometer values: x - z
+dataset size = 454, pos_num = 55, neg_num = 399
+train data batch size = 363
+test data batch size = 91
+RFC params: number of trees = 10, test count = 10
+Epoch 0
+current accurancy: 0.945055, precison: 1.000000, recall: 0.636364, f1_score: 0.705882
+Epoch 1
+current accurancy: 0.956044, precison: 1.000000, recall: 0.714286, f1_score: 0.833333
+Epoch 2
+current accurancy: 0.967033, precison: 0.800000, recall: 0.833333, f1_score: 0.727273
+Epoch 3
+current accurancy: 0.978022, precison: 1.000000, recall: 1.000000, f1_score: 0.875000
+Epoch 4
+current accurancy: 0.912088, precison: 1.000000, recall: 0.615385, f1_score: 0.640000
+Epoch 5
+current accurancy: 0.989011, precison: 1.000000, recall: 0.833333, f1_score: 0.909091
+Epoch 6
+current accurancy: 0.956044, precison: 1.000000, recall: 0.666667, f1_score: 0.800000
+Epoch 7
+current accurancy: 0.967033, precison: 1.000000, recall: 0.666667, f1_score: 0.666667
+Epoch 8
+current accurancy: 0.934066, precison: 1.000000, recall: 0.642857, f1_score: 0.727273
+Epoch 9
+current accurancy: 0.923077, precison: 1.000000, recall: 0.615385, f1_score: 0.695652
+MIN ACCURACY: 91.208791 MAX ACCURACY: 98.901099 AVG ACCURACY: 95.274725
+MIN PRECISION: 80.000000 MAX PRECISION: 100.000000 AVG PRECISION: 98.000000
+MIN RECALL: 61.538462 MAX RECALL: 100.000000 AVG RECALL: 72.242757
+MIN F1_SCORE: 64.000000 MAX F1_SCORE: 90.909091 AVG F1_SCORE: 75.801709
