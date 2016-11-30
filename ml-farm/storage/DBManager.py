@@ -1,6 +1,5 @@
 from cassandra.cluster import Cluster
 import numpy as np
-from storage.DataInterpolator import DataInterpolator
 
 class DBManager(object):
     def __init__(self):
@@ -9,21 +8,42 @@ class DBManager(object):
         self._cluster = Cluster([self._keyspace_host])
         self._session = self._cluster.connect(self._keyspace)
 
-    def get_fresh_sensor_data(self):
+    def get_fresh_sensor_data(self, xyz):
+        active_axes_count = len(np.where(np.array(xyz) == 1)[0])
+        if active_axes_count == 0:
+            return {}
+        axis_q = ''
+        if xyz[0] == 1:
+            axis_q += 'x, '
+        if xyz[1] == 1:
+            axis_q += 'y, '
+        if xyz[2] == 1:
+            axis_q += 'z, '
+
         users_ids = self.get_updated_users_ids()
-        self.set_not_updated_status(users_ids)
 
         prepared = self._session.prepare(
-            'select x, y, z, timestamp from sensor_data where user_id = ? and fall_status = -1 allow filtering'
+            'select ' + axis_q + 'timestamp from sensor_data where user_id = ? and fall_status = 0 allow filtering'
         )
 
         user_sd = {}
         for user_id in users_ids:
             rows = self._session.execute(prepared, (user_id,))
             if len(rows.current_rows) == 0:
+                user_sd[user_id] = np.empty(0)
                 continue
-            user_sd[user_id] = np.ndarray((len(rows.current_rows), 4), dtype=np.dtype('double'))
-            user_sd[user_id][:, :] = np.array([[row.timestamp, row.x, row.y, row.z] for row in rows])
+            user_sd[user_id] = np.ndarray((len(rows.current_rows), active_axes_count + 1), dtype=np.dtype('double'))
+            user_sd[user_id][:, 0] = np.array([row.timestamp for row in rows.current_rows])
+            f_axis_idx = 1
+            if xyz[0] == 1:
+                user_sd[user_id][:, f_axis_idx] = np.array([row.x for row in rows.current_rows])
+                f_axis_idx += 1
+            if xyz[1] == 1:
+                user_sd[user_id][:, f_axis_idx] = np.array([row.y for row in rows.current_rows])
+                f_axis_idx += 1
+            if xyz[2] == 1:
+                user_sd[user_id][:, f_axis_idx] = np.array([row.z for row in rows.current_rows])
+                f_axis_idx += 1
 
         return user_sd
 
