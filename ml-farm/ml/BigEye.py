@@ -34,6 +34,7 @@ class BigEye(object):
                     fall_status = np.empty((tsps.shape[0], 2), dtype=np.dtype('int64'))
                     fall_status[:, 0] = tsps
                     fall_status[:, 1] = 0
+                    fall_statuses[user_id] = fall_status
 
                     # Not realistic timestamp diff
                     if (end - start) / sdata.shape[0] > self._max_avg_ts_diff:
@@ -71,20 +72,20 @@ class BigEye(object):
                         if itsps[i] > tsps[pivot] and (pivot + 1 < len(tsps)):
                             pivot += 1
                         # if fall_status[pivot, 1] != 1:
-                        fall_status[pivot, 1] = predicted[0]
+                        # fall_status[pivot, 1] = predicted[0]
 
-                    fall_statuses[user_id] = fall_status
+                    fall_statuses[user_id][:, 1] = -1
 
                     pred = np.array(pred)
                     pos_count = len(pred[pred == 1])
                     pred_count = len(pred)
                     print(pos_count, pred_count)
-                    # print(fall_status[0:fall_status.shape[0] - limit])
                     if pos_count > 0.5 * pred_count:
                         for i in range(10):
                             print('FALL FALL FALL FALL FALL FALL ' +
                                   'FALL FALL FALL FALL FALL FALL')
                         # BigEye.store_frame(test_data[0:axes_count * frame_size])
+                        fall_statuses[user_id][0, 1] = 1
 
                 self._dbm.update_fall_statuses(fall_statuses)
 
