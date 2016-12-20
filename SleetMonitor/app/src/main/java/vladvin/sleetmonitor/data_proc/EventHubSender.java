@@ -11,7 +11,7 @@ import java.io.UnsupportedEncodingException;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.entity.StringEntity;
 
-public class ServerSender {
+public class EventHubSender {
 
     private static final String namespaceName = "winter-ns";
     private static final String eventHubName = "sdeh";
@@ -29,7 +29,7 @@ public class ServerSender {
     private final Context context;
     private final AsyncHttpClient client;
 
-    public ServerSender(Context context) {
+    public EventHubSender(Context context) {
         this.context = context;
         this.client = new AsyncHttpClient();
         client.addHeader("Authorization", sasToken);
