@@ -2,6 +2,7 @@ package vladvin.sleetmonitor.sensor_tracker;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -9,6 +10,8 @@ import android.support.v4.app.ActivityCompat;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 import vladvin.sleetmonitor.MapViewer;
@@ -18,12 +21,15 @@ import vladvin.sleetmonitor.MapViewer;
  */
 public class LocationTracker implements
         GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.OnConnectionFailedListener,
+        LocationListener {
+
+    private static final long LOCATION_UPDATE_INTERVAL = 5000;  // msec
 
     private Activity activity;
-
     private GoogleApiClient locationApiClient;
-    private boolean isWaitPermissionApproval = false;
+
+    private Location lastLocation = null;
 
     public LocationTracker(Activity activity) {
         this.activity = activity;
@@ -36,25 +42,32 @@ public class LocationTracker implements
     }
 
     public Location getLastKnownLocation() {
-        if (locationApiClient.isConnected() && !isWaitPermissionApproval) {
-            if (ActivityCompat.checkSelfPermission(
-                    activity.getApplicationContext(),
-                    Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(activity,
-                        new String[] { Manifest.permission.ACCESS_FINE_LOCATION },
-                        MapViewer.LOCATION_PERMISSION_REQUEST_CODE);
-
-                isWaitPermissionApproval = true;
-                return null;
-            }
-            return LocationServices.FusedLocationApi.getLastLocation(locationApiClient);
-        }
-
-        return null;
+        return lastLocation;
     }
 
-    public void onPermissionGranted() {
-        isWaitPermissionApproval = false;
+    @Override
+    public void onConnected(Bundle bundle) {
+        LocationRequest locRequest = LocationRequest
+                .create()
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                .setInterval(LOCATION_UPDATE_INTERVAL);
+
+        if (ActivityCompat.checkSelfPermission(
+                activity.getApplicationContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity,
+                    new String[] { Manifest.permission.ACCESS_FINE_LOCATION },
+                    MapViewer.LOCATION_PERMISSION_REQUEST_CODE);
+            return;
+        }
+
+        LocationServices.FusedLocationApi
+                .requestLocationUpdates(locationApiClient, locRequest, this);
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        lastLocation = location;
     }
 
     public void connectLocationServices() {
@@ -72,11 +85,6 @@ public class LocationTracker implements
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-
-    }
-
-    @Override
-    public void onConnected(Bundle bundle) {
 
     }
 }

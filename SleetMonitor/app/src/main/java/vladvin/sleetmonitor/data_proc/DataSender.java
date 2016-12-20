@@ -2,7 +2,6 @@ package vladvin.sleetmonitor.data_proc;
 
 import android.content.Context;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -16,11 +15,11 @@ import vladvin.sleetmonitor.sensor_tracker.SensorData;
 
 public class DataSender {
     private final UuidProvider uuidProvider;
-    private ServerSender serverSender;
+    private EventHubSender eventHubSender;
 
     public DataSender(Context context) {
         uuidProvider = new UuidProvider(context);
-        serverSender = new ServerSender(context);
+        eventHubSender = new EventHubSender(context);
     }
 
     public void sendMeasurements(ConcurrentLinkedQueue<SensorData> dataQueue, int count) {
@@ -36,8 +35,8 @@ public class DataSender {
         UserSensorData usd = new UserSensorData(userId, data);
         String json = DataConverter.toJson(usd);
 
-        if (serverSender != null) {
-            serverSender.sendMessage(json);
+        if (eventHubSender != null) {
+            eventHubSender.sendMessage(json);
         }
     }
 }
