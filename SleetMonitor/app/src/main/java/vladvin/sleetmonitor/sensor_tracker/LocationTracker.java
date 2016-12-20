@@ -14,7 +14,7 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
-import vladvin.sleetmonitor.MapViewer;
+import vladvin.sleetmonitor.map_viewer.MapViewer;
 
 /**
  * Created by VladVin on 18.09.2016.

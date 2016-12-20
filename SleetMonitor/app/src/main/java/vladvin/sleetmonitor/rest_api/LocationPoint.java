@@ -1,4 +1,4 @@
-package vladvin.sleetmonitor.map_viewer;
+package vladvin.sleetmonitor.rest_api;
 
 public class LocationPoint {
     private double lat;

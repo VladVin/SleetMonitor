@@ -35,11 +35,15 @@ public class SensorTracker implements SensorEventListener {
                 activity.getApplicationContext().getSystemService(Context.SENSOR_SERVICE);
         this.accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         this.accelerometerMaxRange = accelerometer.getMaximumRange();
-        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_FASTEST);
 
         this.locationTracker = locationTracker;
         this.measurements = new ConcurrentLinkedQueue<>();
         this.dataSender = dataSender;
+    }
+
+    public void startTracking() {
+        sensorManager.registerListener(this, accelerometer,
+                SensorManager.SENSOR_DELAY_FASTEST);
     }
 
     @Override
